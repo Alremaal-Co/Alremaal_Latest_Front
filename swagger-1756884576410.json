@@ -1,0 +1,2557 @@
+{
+  "openapi": "3.0.0",
+  "paths": {
+    "/api/v1/auth/request-otp": {
+      "post": {
+        "operationId": "AuthController_requestOtp_v1",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RequestOtpDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OTP sent successfully."
+          },
+          "429": {
+            "description": "Too Many Requests."
+          }
+        },
+        "summary": "Step 1: Request an OTP for login/registration",
+        "tags": [
+          "Authentication"
+        ]
+      }
+    },
+    "/api/v1/auth/verify-otp": {
+      "post": {
+        "operationId": "AuthController_verifyOtp_v1",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/VerifyOtpDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Returns tokens and profile status."
+          },
+          "401": {
+            "description": "Invalid or expired OTP."
+          }
+        },
+        "summary": "Step 2: Verify OTP and receive tokens",
+        "tags": [
+          "Authentication"
+        ]
+      }
+    },
+    "/api/v1/auth/refresh-token": {
+      "post": {
+        "operationId": "AuthController_refreshToken_v1",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "New access token generated."
+          },
+          "403": {
+            "description": "Access Denied. Invalid refresh token."
+          }
+        },
+        "security": [
+          {
+            "refresh_token": []
+          }
+        ],
+        "summary": "Refresh access token using the httpOnly refresh token cookie",
+        "tags": [
+          "Authentication"
+        ]
+      }
+    },
+    "/api/v1/auth/complete-profile": {
+      "post": {
+        "operationId": "AuthController_completeProfile_v1",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CompleteProfileDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "401": {
+            "description": "Unauthorized. Invalid or missing token."
+          },
+          "403": {
+            "description": "Forbidden. Insufficient permissions or incomplete profile."
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Step 3 (Optional): Complete user profile",
+        "tags": [
+          "Authentication"
+        ]
+      }
+    },
+    "/api/v1/auth/logout": {
+      "post": {
+        "operationId": "AuthController_logout_v1",
+        "parameters": [],
+        "responses": {
+          "401": {
+            "description": "Unauthorized. Invalid or missing token."
+          },
+          "403": {
+            "description": "Forbidden. Insufficient permissions or incomplete profile."
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Log out the current user and invalidate tokens",
+        "tags": [
+          "Authentication"
+        ]
+      }
+    },
+    "/api/v1/auth/admin-dashboard": {
+      "get": {
+        "operationId": "AuthController_getAdminDashboard_v1",
+        "parameters": [],
+        "responses": {
+          "401": {
+            "description": "Unauthorized. Invalid or missing token."
+          },
+          "403": {
+            "description": "Forbidden. Insufficient permissions or incomplete profile."
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Example of a highly secure route",
+        "tags": [
+          "Authentication"
+        ]
+      }
+    },
+    "/api/v1/users": {
+      "get": {
+        "operationId": "UsersController_findAll_v1",
+        "parameters": [
+          {
+            "name": "select",
+            "required": false,
+            "in": "query",
+            "description": "الحقول المراد إرجاعها",
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          },
+          {
+            "name": "filter",
+            "required": false,
+            "in": "query",
+            "description": "فلترة دقيقة، مثال: filter.isActive=$eq:true",
+            "schema": {
+              "$ref": "#/components/schemas/Object"
+            }
+          },
+          {
+            "name": "searchBy",
+            "required": false,
+            "in": "query",
+            "description": "الحقول القابلة للبحث",
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          },
+          {
+            "name": "search",
+            "required": false,
+            "in": "query",
+            "description": "بحث عام في جميع الحقول القابلة للبحث",
+            "schema": {
+              "default": "",
+              "type": "string"
+            }
+          },
+          {
+            "name": "sortBy",
+            "required": false,
+            "in": "query",
+            "description": "الترتيب، مثال: name:ASC أو id:DESC",
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          },
+          {
+            "name": "limit",
+            "required": false,
+            "in": "query",
+            "description": "عدد العناصر في كل صفحة",
+            "schema": {
+              "default": 10,
+              "type": "number"
+            }
+          },
+          {
+            "name": "page",
+            "required": false,
+            "in": "query",
+            "description": "رقم الصفحة المطلوبة",
+            "schema": {
+              "default": 1,
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "403": {
+            "description": "Forbidden resource."
+          }
+        },
+        "summary": "Get all users with pagination, filtering, sorting, and searching",
+        "tags": [
+          "Users Management (Admin)"
+        ]
+      }
+    },
+    "/api/v1/users/{id}": {
+      "get": {
+        "operationId": "UsersController_findOne_v1",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "User data returned successfully."
+          },
+          "403": {
+            "description": "Forbidden resource."
+          },
+          "404": {
+            "description": "User not found."
+          }
+        },
+        "summary": "Get a single user by ID (Admin)",
+        "tags": [
+          "Users Management (Admin)"
+        ]
+      },
+      "patch": {
+        "operationId": "UsersController_update_v1",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateUserDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "User updated successfully."
+          },
+          "403": {
+            "description": "Forbidden resource."
+          },
+          "404": {
+            "description": "User not found."
+          }
+        },
+        "summary": "Update a user by ID (Admin)",
+        "tags": [
+          "Users Management (Admin)"
+        ]
+      },
+      "delete": {
+        "operationId": "UsersController_remove_v1",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "User deleted successfully."
+          },
+          "403": {
+            "description": "Forbidden resource."
+          },
+          "404": {
+            "description": "User not found."
+          }
+        },
+        "summary": "Delete a user by ID (Admin)",
+        "tags": [
+          "Users Management (Admin)"
+        ]
+      }
+    },
+    "/api/v1/profile/me": {
+      "get": {
+        "operationId": "ProfileController_getProfile_v1",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Successfully retrieved user profile."
+          },
+          "401": {
+            "description": "Unauthorized."
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Get current logged-in user profile",
+        "tags": [
+          "Profile"
+        ]
+      },
+      "patch": {
+        "operationId": "ProfileController_updateProfile_v1",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateProfileDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Profile updated successfully."
+          },
+          "400": {
+            "description": "Bad Request (e.g., invalid email)."
+          },
+          "401": {
+            "description": "Unauthorized."
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Update current logged-in user profile",
+        "tags": [
+          "Profile"
+        ]
+      }
+    },
+    "/api/v1/tables": {
+      "get": {
+        "description": "query parameters",
+        "operationId": "TableManagerController_findAll_v1",
+        "parameters": [
+          {
+            "name": "output",
+            "required": false,
+            "in": "query",
+            "description": "The desired output format for the data.",
+            "schema": {
+              "default": "pagination",
+              "type": "string",
+              "enum": [
+                "pagination",
+                "geojson",
+                "select2"
+              ]
+            }
+          },
+          {
+            "name": "page",
+            "required": false,
+            "in": "query",
+            "description": "The page number to retrieve.",
+            "schema": {
+              "minimum": 1,
+              "default": 1,
+              "type": "number"
+            }
+          },
+          {
+            "name": "limit",
+            "required": false,
+            "in": "query",
+            "description": "The number of items to return per page.",
+            "schema": {
+              "minimum": 1,
+              "maximum": 100,
+              "default": 10,
+              "type": "number"
+            }
+          },
+          {
+            "name": "search",
+            "required": false,
+            "in": "query",
+            "description": "A general search term to query across all searchable fields.",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "select",
+            "required": false,
+            "in": "query",
+            "description": "A comma-separated list of columns to include in the response (e.g., id,name,createdAt).",
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          },
+          {
+            "name": "filter",
+            "required": false,
+            "in": "query",
+            "description": " filter[0][field]=status&filter[0][operator]=eq&filter[0][value]=active",
+            "style": "deepObject",
+            "explode": true,
+            "schema": {
+              "example": "[{\"field\":\"status\",\"operator\":\"eq\",\"value\":\"published\"}]",
+              "type": "object"
+            }
+          },
+          {
+            "name": "sortBy",
+            "required": false,
+            "in": "query",
+            "description": "Dynamic sorting criteria (e.g., \"name:ASC\" or \"createdAt:DESC\").",
+            "schema": {
+              "example": "displayName:ASC",
+              "type": "string"
+            }
+          },
+          {
+            "name": "relations",
+            "required": false,
+            "in": "query",
+            "description": "An array of relation-loading conditions (JSON string format).",
+            "schema": {
+              "example": "[{\"name\":\"author\",\"select\":[\"id\",\"name\"]}]",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "تم جلب القائمة بنجاح.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Promise"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "إذا كان `endpointName` غير موجود."
+          }
+        },
+        "summary": "Get All __dynamic tables__",
+        "tags": [
+          "Table Manager"
+        ]
+      },
+      "post": {
+        "operationId": "TableManagerController_create_v1",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateTableDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "تم إنشاء الجدول بنجاح."
+          },
+          "400": {
+            "description": "بيانات غير صالحة أو اسم نقطة النهاية موجود بالفعل."
+          }
+        },
+        "summary": "إنشاء جدول ديناميكي وواجهة برمجة تطبيقاته",
+        "tags": [
+          "Table Manager"
+        ]
+      }
+    },
+    "/api/v1/tables/relations/one-to-many": {
+      "post": {
+        "operationId": "TableManagerController_createOneToManyRelation_v1",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateOneToManyDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "تم إنشاء العلاقة بنجاح"
+          }
+        },
+        "summary": "إنشاء علاقة \"واحد إلى متعدد\" (One-to-Many)",
+        "tags": [
+          "Table Manager"
+        ]
+      }
+    },
+    "/api/v1/tables/relations/one-to-one": {
+      "post": {
+        "operationId": "TableManagerController_createOneToOneRelation_v1",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateOneToOneDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "تم إنشاء العلاقة بنجاح"
+          }
+        },
+        "summary": "إنشاء علاقة \"واحد إلى واحد\" (One-to-One)",
+        "tags": [
+          "Table Manager"
+        ]
+      }
+    },
+    "/api/v1/tables/relations/many-to-many": {
+      "post": {
+        "operationId": "TableManagerController_createManyToManyRelation_v1",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateManyToManyDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "تم إنشاء الجدول الوسيط والعلاقات بنجاح"
+          }
+        },
+        "summary": "إنشاء علاقة \"متعدد إلى متعدد\" (Many-to-Many)",
+        "tags": [
+          "Table Manager"
+        ]
+      }
+    },
+    "/api/v1/tables/metadata/{endpointName}": {
+      "get": {
+        "operationId": "TableManagerController_getMetadata_v1",
+        "parameters": [
+          {
+            "name": "endpointName",
+            "required": true,
+            "in": "path",
+            "description": "اسم نقطة النهاية للجدول",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "تم العثور على البيانات الوصفية."
+          },
+          "404": {
+            "description": "نقطة النهاية غير موجودة."
+          }
+        },
+        "summary": "الحصول على البيانات الوصفية الكاملة لجدول ديناميكي",
+        "tags": [
+          "Table Manager"
+        ]
+      }
+    },
+    "/api/v1/tables/columns/filed/{endpointName}": {
+      "get": {
+        "operationId": "TableManagerController_getColumns_v1",
+        "parameters": [
+          {
+            "name": "endpointName",
+            "required": true,
+            "in": "path",
+            "description": "اسم نقطة النهاية للجدول",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "تم العثور على الأعمدة."
+          },
+          "404": {
+            "description": "نقطة النهاية غير موجودة."
+          }
+        },
+        "summary": "الحصول على تفاصيل أعمدة جدول معين فقط",
+        "tags": [
+          "Table Manager"
+        ]
+      }
+    },
+    "/api/v1/tables/{endpointName}": {
+      "patch": {
+        "operationId": "TableManagerController_update_v1",
+        "parameters": [
+          {
+            "name": "endpointName",
+            "required": true,
+            "in": "path",
+            "description": "اسم نقطة النهاية للجدول المراد تحديثه",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateTableDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "تم تحديث الجدول بنجاح."
+          },
+          "400": {
+            "description": "بيانات التحديث غير صالحة."
+          },
+          "404": {
+            "description": "نقطة النهاية غير موجودة."
+          }
+        },
+        "summary": "تحديث البيانات الوصفية لجدول (مثل اسم العرض)",
+        "tags": [
+          "Table Manager"
+        ]
+      },
+      "delete": {
+        "operationId": "TableManagerController_delete_v1",
+        "parameters": [
+          {
+            "name": "endpointName",
+            "required": true,
+            "in": "path",
+            "description": "اسم نقطة النهاية للجدول المراد حذفه",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "تم حذف الجدول بنجاح."
+          },
+          "404": {
+            "description": "نقطة النهاية غير موجودة."
+          }
+        },
+        "summary": "حذف جدول ديناميكي بالكامل (عملية لا يمكن التراجع عنها)",
+        "tags": [
+          "Table Manager"
+        ]
+      }
+    },
+    "/api/v1/dynamic/{endpointName}/select2": {
+      "get": {
+        "operationId": "DynamicDataController_findForSelect2_v1",
+        "parameters": [
+          {
+            "name": "endpointName",
+            "required": true,
+            "in": "path",
+            "description": "The unique identifier of the target table.",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "search",
+            "required": false,
+            "in": "query",
+            "description": "A search term to filter the results.",
+            "schema": {
+              "example": "Item",
+              "type": "string"
+            }
+          },
+          {
+            "name": "limit",
+            "required": false,
+            "in": "query",
+            "description": "The maximum number of items per page.",
+            "schema": {
+              "minimum": 1,
+              "maximum": 200,
+              "default": 50,
+              "type": "number"
+            }
+          },
+          {
+            "name": "page",
+            "required": false,
+            "in": "query",
+            "description": "The page number to retrieve for lazy loading.",
+            "schema": {
+              "minimum": 1,
+              "default": 1,
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "An array of items formatted for Select2.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Select2Item"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "The endpoint is not configured for Select2."
+          }
+        },
+        "summary": "Get Data in Select2 Format",
+        "tags": [
+          "Dynamic Data Operations"
+        ]
+      }
+    },
+    "/api/v1/dynamic/{endpointName}/columns/{columnName}/select2": {
+      "get": {
+        "operationId": "DynamicDataController_findColumnValues_v1",
+        "parameters": [
+          {
+            "name": "endpointName",
+            "required": true,
+            "in": "path",
+            "description": "The table containing the relational column.",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "columnName",
+            "required": true,
+            "in": "path",
+            "description": "The name of the relational column.",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "search",
+            "required": false,
+            "in": "query",
+            "description": "A search term to filter the results.",
+            "schema": {
+              "example": "Item",
+              "type": "string"
+            }
+          },
+          {
+            "name": "limit",
+            "required": false,
+            "in": "query",
+            "description": "The maximum number of items per page.",
+            "schema": {
+              "minimum": 1,
+              "maximum": 200,
+              "default": 50,
+              "type": "number"
+            }
+          },
+          {
+            "name": "page",
+            "required": false,
+            "in": "query",
+            "description": "The page number to retrieve for lazy loading.",
+            "schema": {
+              "minimum": 1,
+              "default": 1,
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "An array of items from the related table, formatted for Select2.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Select2Item"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "The specified column is not a valid relation."
+          }
+        },
+        "summary": "Get Values for a Relational Column",
+        "tags": [
+          "Dynamic Data Operations"
+        ]
+      }
+    },
+    "/api/v1/dynamic/{endpointName}/trash": {
+      "get": {
+        "description": "Fetches a list of items that have been soft-deleted. This is useful for \"trash can\" or \"recycle bin\" functionality.",
+        "operationId": "DynamicDataController_findInTrash_v1",
+        "parameters": [
+          {
+            "name": "endpointName",
+            "required": true,
+            "in": "path",
+            "description": "The unique identifier of the target table.",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "output",
+            "required": false,
+            "in": "query",
+            "description": "The desired output format for the data.",
+            "schema": {
+              "default": "pagination",
+              "type": "string",
+              "enum": [
+                "pagination",
+                "geojson",
+                "select2"
+              ]
+            }
+          },
+          {
+            "name": "page",
+            "required": false,
+            "in": "query",
+            "description": "The page number to retrieve.",
+            "schema": {
+              "minimum": 1,
+              "default": 1,
+              "type": "number"
+            }
+          },
+          {
+            "name": "limit",
+            "required": false,
+            "in": "query",
+            "description": "The number of items to return per page.",
+            "schema": {
+              "minimum": 1,
+              "maximum": 100,
+              "default": 10,
+              "type": "number"
+            }
+          },
+          {
+            "name": "search",
+            "required": false,
+            "in": "query",
+            "description": "A general search term to query across all searchable fields.",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "select",
+            "required": false,
+            "in": "query",
+            "description": "A comma-separated list of columns to include in the response (e.g., id,name,createdAt).",
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          },
+          {
+            "name": "filter",
+            "required": false,
+            "in": "query",
+            "description": "An array of dynamic filter conditions (JSON string format).",
+            "schema": {
+              "example": "[{\"field\":\"status\",\"operator\":\"eq\",\"value\":\"published\"}]",
+              "type": "string"
+            }
+          },
+          {
+            "name": "sortBy",
+            "required": false,
+            "in": "query",
+            "description": "Dynamic sorting criteria (e.g., \"name:ASC\" or \"createdAt:DESC\").",
+            "schema": {
+              "example": "displayName:ASC",
+              "type": "string"
+            }
+          },
+          {
+            "name": "relations",
+            "required": false,
+            "in": "query",
+            "description": "An array of relation-loading conditions (JSON string format).",
+            "schema": {
+              "example": "[{\"name\":\"author\",\"select\":[\"id\",\"name\"]}]",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Paginated list of soft-deleted items.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PaginatedData"
+                }
+              }
+            }
+          }
+        },
+        "summary": "Retrieve a Paginated List of Soft-Deleted Items (Trash)",
+        "tags": [
+          "Dynamic Data Operations"
+        ]
+      }
+    },
+    "/api/v1/dynamic/{endpointName}": {
+      "get": {
+        "operationId": "DynamicDataController_findAll_v1",
+        "parameters": [
+          {
+            "name": "endpointName",
+            "required": true,
+            "in": "path",
+            "description": "The unique identifier of the target table.",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "output",
+            "required": false,
+            "in": "query",
+            "description": "The desired output format for the data.",
+            "schema": {
+              "default": "pagination",
+              "type": "string",
+              "enum": [
+                "pagination",
+                "geojson",
+                "select2"
+              ]
+            }
+          },
+          {
+            "name": "page",
+            "required": false,
+            "in": "query",
+            "description": "The page number to retrieve.",
+            "schema": {
+              "minimum": 1,
+              "default": 1,
+              "type": "number"
+            }
+          },
+          {
+            "name": "limit",
+            "required": false,
+            "in": "query",
+            "description": "The number of items to return per page.",
+            "schema": {
+              "minimum": 1,
+              "maximum": 100,
+              "default": 10,
+              "type": "number"
+            }
+          },
+          {
+            "name": "search",
+            "required": false,
+            "in": "query",
+            "description": "A general search term to query across all searchable fields.",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "select",
+            "required": false,
+            "in": "query",
+            "description": "A comma-separated list of columns to include in the response (e.g., id,name,createdAt).",
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          },
+          {
+            "name": "filter",
+            "required": false,
+            "in": "query",
+            "description": "An array of dynamic filter conditions (JSON string format).",
+            "schema": {
+              "example": "[{\"field\":\"status\",\"operator\":\"eq\",\"value\":\"published\"}]",
+              "type": "string"
+            }
+          },
+          {
+            "name": "sortBy",
+            "required": false,
+            "in": "query",
+            "description": "Dynamic sorting criteria (e.g., \"name:ASC\" or \"createdAt:DESC\").",
+            "schema": {
+              "example": "displayName:ASC",
+              "type": "string"
+            }
+          },
+          {
+            "name": "relations",
+            "required": false,
+            "in": "query",
+            "description": "An array of relation-loading conditions (JSON string format).",
+            "schema": {
+              "example": "[{\"name\":\"author\",\"select\":[\"id\",\"name\"]}]",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Paginated list of active items retrieved successfully.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PaginatedData"
+                }
+              }
+            }
+          }
+        },
+        "summary": "Retrieve a Paginated List of Active Items",
+        "tags": [
+          "Dynamic Data Operations"
+        ]
+      },
+      "post": {
+        "operationId": "DynamicDataController_create_v1",
+        "parameters": [
+          {
+            "name": "endpointName",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateItemDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "The item was created successfully."
+          }
+        },
+        "summary": "Create a New Item",
+        "tags": [
+          "Dynamic Data Operations"
+        ]
+      }
+    },
+    "/api/v1/dynamic/{endpointName}/{id}": {
+      "get": {
+        "operationId": "DynamicDataController_findOne_v1",
+        "parameters": [
+          {
+            "name": "endpointName",
+            "required": true,
+            "in": "path",
+            "description": "The unique identifier of the target table.",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "description": "The UUID of the item to retrieve.",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The requested item was found and returned."
+          },
+          "404": {
+            "description": "An item with the specified ID was not found."
+          }
+        },
+        "summary": "Retrieve a Single Item by ID",
+        "tags": [
+          "Dynamic Data Operations"
+        ]
+      },
+      "patch": {
+        "operationId": "DynamicDataController_update_v1",
+        "parameters": [
+          {
+            "name": "endpointName",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateItemDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "The item was updated successfully."
+          }
+        },
+        "summary": "Update an Existing Item",
+        "tags": [
+          "Dynamic Data Operations"
+        ]
+      },
+      "delete": {
+        "operationId": "DynamicDataController_remove_v1",
+        "parameters": [
+          {
+            "name": "endpointName",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "The item was permanently deleted."
+          }
+        },
+        "summary": "Permanently Delete a Single Item",
+        "tags": [
+          "Dynamic Data Operations"
+        ]
+      }
+    },
+    "/api/v1/dynamic/{endpointName}/{id}/soft-delete": {
+      "delete": {
+        "operationId": "DynamicDataController_softRemove_v1",
+        "parameters": [
+          {
+            "name": "endpointName",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "The item was successfully soft-deleted."
+          }
+        },
+        "summary": "Soft Delete a Single Item",
+        "tags": [
+          "Dynamic Data Operations"
+        ]
+      }
+    },
+    "/api/v1/dynamic/{endpointName}/{id}/restore": {
+      "post": {
+        "operationId": "DynamicDataController_restore_v1",
+        "parameters": [
+          {
+            "name": "endpointName",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The item was successfully restored."
+          }
+        },
+        "summary": "Restore a Soft-Deleted Item",
+        "tags": [
+          "Dynamic Data Operations"
+        ]
+      }
+    },
+    "/api/v1/dynamic/{endpointName}/bulk/soft-delete": {
+      "post": {
+        "operationId": "DynamicDataController_bulkSoftRemove_v1",
+        "parameters": [
+          {
+            "name": "endpointName",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/BulkDeleteDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Returns the number of items successfully soft-deleted."
+          }
+        },
+        "summary": "Soft Delete Multiple Items in Bulk",
+        "tags": [
+          "Dynamic Data Operations"
+        ]
+      }
+    },
+    "/api/v1/dynamic/{endpointName}/bulk/restore": {
+      "post": {
+        "operationId": "DynamicDataController_bulkRestore_v1",
+        "parameters": [
+          {
+            "name": "endpointName",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/BulkRestoreDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Returns the number of items successfully restored."
+          }
+        },
+        "summary": "Restore Multiple Items in Bulk",
+        "tags": [
+          "Dynamic Data Operations"
+        ]
+      }
+    },
+    "/api/v1/dynamic/{endpointName}/bulk/delete": {
+      "post": {
+        "operationId": "DynamicDataController_bulkRemove_v1",
+        "parameters": [
+          {
+            "name": "endpointName",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/BulkDeleteDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Returns the number of items successfully deleted."
+          }
+        },
+        "summary": "Permanently Delete Multiple Items in Bulk",
+        "tags": [
+          "Dynamic Data Operations"
+        ]
+      }
+    },
+    "/api/v1/tables/columns/{endpointName}": {
+      "get": {
+        "operationId": "ColumnManagerController_getColumns_v1",
+        "parameters": [
+          {
+            "name": "endpointName",
+            "required": true,
+            "in": "path",
+            "description": "The endpoint name of the target table",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Columns retrieved successfully."
+          },
+          "404": {
+            "description": "Table not found."
+          }
+        },
+        "summary": "Get all columns for a specific table",
+        "tags": [
+          "Column Manager"
+        ]
+      },
+      "post": {
+        "operationId": "ColumnManagerController_addColumn_v1",
+        "parameters": [
+          {
+            "name": "endpointName",
+            "required": true,
+            "in": "path",
+            "description": "The endpoint name of the target table",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AddColumnDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Column added successfully.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DynamicColumn"
+                }
+              }
+            }
+          }
+        },
+        "summary": "Add a new column to a table",
+        "tags": [
+          "Column Manager"
+        ]
+      }
+    },
+    "/api/v1/tables/columns/{endpointName}/{columnName}": {
+      "delete": {
+        "operationId": "ColumnManagerController_deleteColumn_v1",
+        "parameters": [
+          {
+            "name": "endpointName",
+            "required": true,
+            "in": "path",
+            "description": "The endpoint name of the target table",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "columnName",
+            "required": true,
+            "in": "path",
+            "description": "The name of the column to delete",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": ""
+          }
+        },
+        "summary": "Delete a column from a table (irreversible)",
+        "tags": [
+          "Column Manager"
+        ]
+      },
+      "patch": {
+        "operationId": "ColumnManagerController_updateColumn_v1",
+        "parameters": [
+          {
+            "name": "endpointName",
+            "required": true,
+            "in": "path",
+            "description": "The endpoint name of the target table",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "columnName",
+            "required": true,
+            "in": "path",
+            "description": "The name of the column to update",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateColumnDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "summary": "Update a column's metadata",
+        "tags": [
+          "Column Manager"
+        ]
+      }
+    },
+    "/api/v1/tables/columns/{endpointName}/{columnName}/link": {
+      "delete": {
+        "operationId": "ColumnManagerController_deleteRelation_v1",
+        "parameters": [
+          {
+            "name": "endpointName",
+            "required": true,
+            "in": "path",
+            "description": "The endpoint name of the target table",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "columnName",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Relationship removed successfully.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DynamicColumn"
+                }
+              }
+            }
+          }
+        },
+        "summary": "Delete a foreign key relationship from a column",
+        "tags": [
+          "Column Manager"
+        ]
+      }
+    },
+    "/api/v1/tables/columns/{endpointName}/{columnName}/clear": {
+      "post": {
+        "operationId": "ColumnManagerController_clearColumnValues_v1",
+        "parameters": [
+          {
+            "name": "endpointName",
+            "required": true,
+            "in": "path",
+            "description": "The endpoint name of the target table",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "columnName",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "summary": "Clear all values in a column (sets them to NULL)",
+        "tags": [
+          "Column Manager"
+        ]
+      }
+    }
+  },
+  "info": {
+    "title": "Dynamic Tables API",
+    "description": "API for dynamically creating and managing tables.",
+    "version": "1.0",
+    "contact": {}
+  },
+  "tags": [],
+  "servers": [],
+  "components": {
+    "securitySchemes": {
+      "bearer": {
+        "scheme": "bearer",
+        "bearerFormat": "JWT",
+        "type": "http"
+      },
+      "cookie": {
+        "type": "apiKey",
+        "in": "cookie",
+        "name": "refresh_token",
+        "description": "The refresh token for authentication stored in an httpOnly cookie."
+      }
+    },
+    "schemas": {
+      "RequestOtpDto": {
+        "type": "object",
+        "properties": {
+          "phoneNumber": {
+            "type": "string",
+            "example": "+966501234567",
+            "description": "User phone number in international format"
+          }
+        },
+        "required": [
+          "phoneNumber"
+        ]
+      },
+      "VerifyOtpDto": {
+        "type": "object",
+        "properties": {
+          "phoneNumber": {
+            "type": "string",
+            "example": "+966501234567",
+            "description": "User phone number in international format"
+          },
+          "otp": {
+            "type": "string",
+            "example": "123456",
+            "description": "The 6-digit OTP code"
+          }
+        },
+        "required": [
+          "phoneNumber",
+          "otp"
+        ]
+      },
+      "CompleteProfileDto": {
+        "type": "object",
+        "properties": {
+          "fullNameAr": {
+            "type": "string",
+            "example": "علي محمد",
+            "description": "Full name in Arabic"
+          },
+          "fullNameEn": {
+            "type": "string",
+            "example": "Ali mohmed",
+            "description": "Full name in English"
+          },
+          "email": {
+            "type": "string",
+            "example": "user@example.com",
+            "description": "User email (optional)"
+          },
+          "city": {
+            "type": "string",
+            "example": "Riyadh",
+            "description": "City"
+          },
+          "country": {
+            "type": "string",
+            "example": "SA",
+            "description": "Country Code (e.g., SA, AE)"
+          },
+          "language": {
+            "type": "string",
+            "example": "ar",
+            "description": "Preferred language (ar/en)"
+          },
+          "role": {
+            "type": "string",
+            "enum": [
+              "PROPERTY_OWNER",
+              "REAL_ESTATE_AGENT",
+              "REAL_ESTATE_DEVELOPER",
+              "PROPERTY_SEEKER",
+              "FINANCING_SEEKER",
+              "BANK_EMPLOYEE",
+              "ADMIN",
+              "EDITOR",
+              "VIEWER",
+              "MANAGER",
+              "OWNER",
+              "SUPER_USER"
+            ],
+            "example": "PROPERTY_SEEKER",
+            "description": "The primary role of the user"
+          }
+        },
+        "required": [
+          "fullNameAr",
+          "fullNameEn",
+          "city",
+          "country",
+          "language",
+          "role"
+        ]
+      },
+      "Object": {
+        "type": "object",
+        "properties": {}
+      },
+      "UpdateUserDto": {
+        "type": "object",
+        "properties": {
+          "fullNameEn": {
+            "type": "string",
+            "example": "John Doe"
+          },
+          "fullNameAr": {
+            "type": "string",
+            "example": "جون دو"
+          },
+          "email": {
+            "type": "string",
+            "example": "john.doe@example.com"
+          },
+          "city": {
+            "type": "string",
+            "example": "Riyadh"
+          },
+          "district": {
+            "type": "string",
+            "example": "Al Olaya"
+          },
+          "imageUrl": {
+            "type": "string",
+            "example": "https://example.com/avatar.png"
+          }
+        }
+      },
+      "UpdateProfileDto": {
+        "type": "object",
+        "properties": {
+          "fullName": {
+            "type": "string",
+            "description": "الاسم الكامل للمستخدم",
+            "example": "علي محمد"
+          },
+          "email": {
+            "type": "string",
+            "description": "البريد الإلكتروني للمستخدم (اختياري)",
+            "example": "user@example.com"
+          },
+          "imageUrl": {
+            "type": "string",
+            "description": "رابط الصورة الشخصية",
+            "example": "https://example.com/image.jpg"
+          },
+          "country": {
+            "type": "string",
+            "description": "الدولة التي يقيم بها المستخدم",
+            "example": "المملكة العربية السعودية"
+          },
+          "language": {
+            "type": "string",
+            "description": "اللغة المفضلة للمستخدم",
+            "example": "ar"
+          },
+          "role": {
+            "type": "string",
+            "description": "تحديد نوع الحساب الأساسي للمستخدم",
+            "enum": [
+              "PROPERTY_OWNER",
+              "REAL_ESTATE_AGENT",
+              "REAL_ESTATE_DEVELOPER",
+              "PROPERTY_SEEKER",
+              "FINANCING_SEEKER",
+              "BANK_EMPLOYEE"
+            ],
+            "example": "PROPERTY_SEEKER"
+          }
+        }
+      },
+      "Promise": {
+        "type": "object",
+        "properties": {}
+      },
+      "ColumnDefinitionDto": {
+        "type": "object",
+        "properties": {
+          "columnName": {
+            "type": "string",
+            "example": "offer_name",
+            "description": "..."
+          },
+          "dataType": {
+            "type": "string",
+            "enum": [
+              "text",
+              "varchar",
+              "integer",
+              "bigint",
+              "numeric",
+              "serial",
+              "bigserial",
+              "boolean",
+              "date",
+              "timestamp with time zone",
+              "jsonb",
+              "uuid",
+              "text[]",
+              "enum"
+            ],
+            "description": "نوع البيانات لهذا العمود"
+          },
+          "labelAr": {
+            "type": "string",
+            "example": "العنوان",
+            "description": "عنوان العمود باللغة العربية"
+          },
+          "labelEn": {
+            "type": "string",
+            "example": "Offer Name",
+            "description": "عنوان العمود باللغة الإنجليزية"
+          },
+          "min": {
+            "type": "number",
+            "default": 0,
+            "description": "أقل قيمة مسموح بها لهذا العمود"
+          },
+          "max": {
+            "type": "number",
+            "default": 100,
+            "description": "أقصى قيمة مسموح بها لهذا العمود"
+          },
+          "isNullable": {
+            "type": "boolean",
+            "default": false,
+            "description": "هل العمود يمكن أن يكون فارغًا؟"
+          },
+          "isSearchable": {
+            "type": "boolean",
+            "default": false,
+            "description": "هل العمود قابل للبحث؟"
+          },
+          "isFilterable": {
+            "type": "boolean",
+            "default": false,
+            "description": "هل العمود قابل للتصفية؟"
+          },
+          "isSortable": {
+            "type": "boolean",
+            "default": true,
+            "description": "هل يمكن ترتيب العمود؟"
+          },
+          "isSelectable": {
+            "type": "boolean",
+            "default": true,
+            "description": "هل يمكن عرض العمود في نتائج GET؟"
+          },
+          "isUnique": {
+            "type": "boolean",
+            "default": false,
+            "description": "هل هذا العمود فريد في الجدول؟"
+          }
+        },
+        "required": [
+          "columnName",
+          "dataType",
+          "labelAr",
+          "labelEn",
+          "min",
+          "max"
+        ]
+      },
+      "CreateTableDto": {
+        "type": "object",
+        "properties": {
+          "endpointName": {
+            "type": "string",
+            "example": "real-estate-offers",
+            "description": "اسم الـ endpoint"
+          },
+          "displayName": {
+            "type": "string",
+            "example": "الاعلانات العقارية",
+            "description": "اسم العرض الظاهر للجدول"
+          },
+          "defaultLimit": {
+            "type": "number",
+            "example": 20,
+            "default": 20,
+            "description": "عدد العناصر الافتراضي لكل صفحة"
+          },
+          "columns": {
+            "description": "تعريف الأعمدة الخاصة بالجدول",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ColumnDefinitionDto"
+            }
+          },
+          "typeViewActions": {
+            "type": "string",
+            "example": "link",
+            "description": "اسم العمود الذي سيتم استخدامه كـ \"name\" في استجابة select2 للغة العربية."
+          },
+          "select2NameColumnAr": {
+            "type": "string",
+            "example": "city_name_ar",
+            "description": "اسم العمود الذي سيتم استخدامه كـ \"name\" في استجابة select2 للغة العربية."
+          },
+          "select2NameColumnEn": {
+            "type": "string",
+            "example": "city_name_en",
+            "description": "اسم العمود الذي سيتم استخدامه كـ \"name\" في استجابة select2 للغة الإنجليزية."
+          },
+          "description": {
+            "type": "string",
+            "description": "وصف الجدول"
+          },
+          "category": {
+            "type": "string",
+            "description": "تصنيف الجدول"
+          },
+          "isActive": {
+            "type": "boolean",
+            "default": true,
+            "description": "هل الجدول مفعل؟"
+          },
+          "isSystem": {
+            "type": "boolean",
+            "default": false,
+            "description": "هل الجدول خاص بالنظام؟"
+          }
+        },
+        "required": [
+          "endpointName",
+          "displayName",
+          "defaultLimit",
+          "columns",
+          "typeViewActions",
+          "category",
+          "isActive",
+          "isSystem"
+        ]
+      },
+      "CreateOneToManyDto": {
+        "type": "object",
+        "properties": {
+          "manySideTable": {
+            "type": "string",
+            "description": "الجدول الذي سيحتوي على سجلات \"المتعدد\" (مثل: districts)",
+            "example": "districts"
+          },
+          "oneSideTable": {
+            "type": "string",
+            "description": "الجدول الذي سيحتوي على سجل \"الواحد\" (مثل: cities)",
+            "example": "cities"
+          },
+          "relationColumnName": {
+            "type": "string",
+            "description": "اسم عمود العلاقة في جدول \"المتعدد\"",
+            "example": "city_id"
+          },
+          "onDeleteAction": {
+            "type": "string",
+            "description": "ماذا يحدث عند حذف سجل من جانب \"الواحد\"",
+            "default": "RESTRICT",
+            "enum": [
+              "SET NULL",
+              "CASCADE",
+              "RESTRICT"
+            ]
+          }
+        },
+        "required": [
+          "manySideTable",
+          "oneSideTable",
+          "relationColumnName",
+          "onDeleteAction"
+        ]
+      },
+      "CreateOneToOneDto": {
+        "type": "object",
+        "properties": {
+          "primaryTable": {
+            "type": "string",
+            "description": "الجدول الرئيسي (مثل: users)",
+            "example": "users"
+          },
+          "dependentTable": {
+            "type": "string",
+            "description": "الجدول التابع الذي سيحتوي على المفتاح الأجنبي (مثل: profiles)",
+            "example": "profiles"
+          },
+          "relationColumnName": {
+            "type": "string",
+            "description": "اسم عمود العلاقة في الجدول التابع",
+            "example": "user_id"
+          },
+          "onDeleteAction": {
+            "type": "string",
+            "description": "ماذا يحدث عند حذف سجل من الجدول الرئيسي (الافتراضي هو حذف السجل التابع)",
+            "default": "CASCADE",
+            "enum": [
+              "CASCADE",
+              "RESTRICT"
+            ]
+          }
+        },
+        "required": [
+          "primaryTable",
+          "dependentTable",
+          "relationColumnName",
+          "onDeleteAction"
+        ]
+      },
+      "CreateManyToManyDto": {
+        "type": "object",
+        "properties": {
+          "tableA": {
+            "type": "string",
+            "description": "اسم الجدول الأول في العلاقة (مثل: property_requests)",
+            "example": "property_requests"
+          },
+          "tableB": {
+            "type": "string",
+            "description": "اسم الجدول الثاني في العلاقة (مثل: districts)",
+            "example": "districts"
+          },
+          "junctionTableName": {
+            "type": "string",
+            "description": "اسم الجدول الوسيط الذي سيتم إنشاؤه لربط الجدولين",
+            "example": "request_target_districts"
+          }
+        },
+        "required": [
+          "tableA",
+          "tableB",
+          "junctionTableName"
+        ]
+      },
+      "UpdateTableDto": {
+        "type": "object",
+        "properties": {
+          "endpointName": {
+            "type": "string",
+            "example": "real-estate-offers",
+            "description": "اسم الـ endpoint"
+          },
+          "displayName": {
+            "type": "string",
+            "example": "الاعلانات العقارية",
+            "description": "اسم العرض الظاهر للجدول"
+          },
+          "defaultLimit": {
+            "type": "number",
+            "example": 20,
+            "default": 20,
+            "description": "عدد العناصر الافتراضي لكل صفحة"
+          },
+          "typeViewActions": {
+            "type": "string",
+            "example": "link",
+            "description": "اسم العمود الذي سيتم استخدامه كـ \"name\" في استجابة select2 للغة العربية."
+          },
+          "select2NameColumnAr": {
+            "type": "string",
+            "example": "city_name_ar",
+            "description": "اسم العمود الذي سيتم استخدامه كـ \"name\" في استجابة select2 للغة العربية."
+          },
+          "select2NameColumnEn": {
+            "type": "string",
+            "example": "city_name_en",
+            "description": "اسم العمود الذي سيتم استخدامه كـ \"name\" في استجابة select2 للغة الإنجليزية."
+          },
+          "description": {
+            "type": "string",
+            "description": "وصف الجدول"
+          },
+          "category": {
+            "type": "string",
+            "description": "تصنيف الجدول"
+          },
+          "isActive": {
+            "type": "boolean",
+            "default": true,
+            "description": "هل الجدول مفعل؟"
+          },
+          "isSystem": {
+            "type": "boolean",
+            "default": false,
+            "description": "هل الجدول خاص بالنظام؟"
+          },
+          "addColumns": {
+            "description": "قائمة بالأعمدة الجديدة فقط التي سيتم إضافتها للجدول.",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ColumnDefinitionDto"
+            }
+          }
+        }
+      },
+      "Select2Item": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "example": "Toyota",
+            "description": "The display name of the item."
+          },
+          "code": {
+            "type": "string",
+            "example": "86c673e8-98e6-430f-836a-d0318510eff9",
+            "description": "The unique identifier (ID/code) of the item."
+          }
+        },
+        "required": [
+          "name",
+          "code"
+        ]
+      },
+      "FilterConditionDto": {
+        "type": "object",
+        "properties": {
+          "field": {
+            "type": "string",
+            "description": "The name of the field to apply the filter on.",
+            "example": "name"
+          },
+          "operator": {
+            "type": "string",
+            "description": "The comparison operator to use for the filter.",
+            "enum": [
+              "eq",
+              "neq",
+              "gt",
+              "gte",
+              "lt",
+              "lte",
+              "like",
+              "in",
+              "notIn",
+              "isNull",
+              "isNotNull"
+            ],
+            "example": "like"
+          },
+          "value": {
+            "type": "object",
+            "description": "The value to compare against. Not required for `isNull` or `isNotNull` operators. For `in`/`notIn`, provide a comma-separated string or an array.",
+            "example": "some search value"
+          }
+        },
+        "required": [
+          "field",
+          "operator"
+        ]
+      },
+      "PaginationMeta": {
+        "type": "object",
+        "properties": {
+          "itemsPerPage": {
+            "type": "number",
+            "example": 10,
+            "description": "Number of items per page."
+          },
+          "totalItems": {
+            "type": "number",
+            "example": 100,
+            "description": "Total number of items available."
+          },
+          "currentPage": {
+            "type": "number",
+            "example": 1,
+            "description": "The current page number."
+          },
+          "totalPages": {
+            "type": "number",
+            "example": 10,
+            "description": "Total number of pages available."
+          },
+          "search": {
+            "type": "object",
+            "example": "some search term",
+            "nullable": true,
+            "description": "The search term used for the query."
+          },
+          "select": {
+            "description": "Fields selected in the query.",
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "filter": {
+            "description": "Filters applied to the query.",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/FilterConditionDto"
+            }
+          }
+        },
+        "required": [
+          "itemsPerPage",
+          "totalItems",
+          "currentPage",
+          "totalPages",
+          "search"
+        ]
+      },
+      "PaginationLinks": {
+        "type": "object",
+        "properties": {
+          "first": {
+            "type": "string",
+            "example": "/api/dynamic/my-endpoint?page=1",
+            "nullable": true,
+            "description": "Link to the first page."
+          },
+          "previous": {
+            "type": "string",
+            "example": null,
+            "nullable": true,
+            "description": "Link to the previous page."
+          },
+          "current": {
+            "type": "string",
+            "example": "/api/dynamic/my-endpoint?page=2",
+            "description": "Link to the current page."
+          },
+          "next": {
+            "type": "string",
+            "example": "/api/dynamic/my-endpoint?page=3",
+            "nullable": true,
+            "description": "Link to the next page."
+          },
+          "last": {
+            "type": "string",
+            "example": "/api/dynamic/my-endpoint?page=10",
+            "nullable": true,
+            "description": "Link to the last page."
+          }
+        },
+        "required": [
+          "first",
+          "previous",
+          "current",
+          "next",
+          "last"
+        ]
+      },
+      "PaginatedData": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "description": "Array of data items for the current page.",
+            "type": "array",
+            "items": {
+              "type": "object"
+            }
+          },
+          "meta": {
+            "description": "Metadata about the pagination.",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/PaginationMeta"
+              }
+            ]
+          },
+          "links": {
+            "description": "Links to navigate through the pages.",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/PaginationLinks"
+              }
+            ]
+          },
+          "fildes": {
+            "type": "object",
+            "description": "Localized field labels and metadata for UI rendering."
+          }
+        },
+        "required": [
+          "data",
+          "meta",
+          "links"
+        ]
+      },
+      "CreateItemDto": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "type": "object",
+            "additionalProperties": true,
+            "description": "A dynamic object representing the data for the new item. Keys and values depend on the endpoint.",
+            "example": {
+              "offer_name": "New offer"
+            }
+          }
+        },
+        "required": [
+          "data"
+        ]
+      },
+      "UpdateItemDto": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "type": "object",
+            "additionalProperties": true,
+            "description": "A dynamic object containing the fields to update. You only need to send the fields you want to change.",
+            "example": {
+              "price": 120.5,
+              "is_available": false
+            }
+          }
+        },
+        "required": [
+          "data"
+        ]
+      },
+      "BulkDeleteDto": {
+        "type": "object",
+        "properties": {
+          "ids": {
+            "description": "An array of UUIDs for the items to be deleted.",
+            "example": [
+              "d290f1ee-6c54-4b01-90e6-d701748f0851",
+              "d290f1ee-6c54-4b01-90e6-d701748f0852"
+            ],
+            "type": "array",
+            "items": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        },
+        "required": [
+          "ids"
+        ]
+      },
+      "BulkRestoreDto": {
+        "type": "object",
+        "properties": {
+          "ids": {
+            "description": "An array of UUIDs for the soft-deleted items to be restored.",
+            "example": [
+              "d290f1ee-6c54-4b01-90e6-d701748f0851",
+              "d290f1ee-6c54-4b01-90e6-d701748f0852"
+            ],
+            "type": "array",
+            "items": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        },
+        "required": [
+          "ids"
+        ]
+      },
+      "AddColumnDto": {
+        "type": "object",
+        "properties": {
+          "columnName": {
+            "type": "string",
+            "example": "user_description",
+            "description": "الاسم البرمجي للعمود (يُستخدم في قاعدة البيانات)"
+          },
+          "dataType": {
+            "type": "string",
+            "enum": [
+              "text",
+              "varchar",
+              "integer",
+              "bigint",
+              "numeric",
+              "serial",
+              "bigserial",
+              "boolean",
+              "date",
+              "timestamp with time zone",
+              "jsonb",
+              "uuid",
+              "text[]",
+              "enum"
+            ],
+            "description": "نوع بيانات العمود (مثل: text, varchar, integer...)"
+          },
+          "labelAr": {
+            "type": "string",
+            "example": "الوصف التفصيلي",
+            "description": "الاسم الظاهر للعمود باللغة العربية"
+          },
+          "labelEn": {
+            "type": "string",
+            "example": "Detailed Description",
+            "description": "الاسم الظاهر للعمود باللغة الإنجليزية"
+          },
+          "isNullable": {
+            "type": "boolean",
+            "default": true,
+            "description": "هل يمكن أن تكون قيمة هذا العمود فارغة (NULL)؟"
+          },
+          "isSearchable": {
+            "type": "boolean",
+            "default": true,
+            "description": "هل يمكن البحث في هذا العمود؟"
+          },
+          "isFilterable": {
+            "type": "boolean",
+            "default": true,
+            "description": "هل يمكن فلترة البيانات بناءً على هذا العمود؟"
+          },
+          "isSortable": {
+            "type": "boolean",
+            "default": true,
+            "description": "هل يمكن ترتيب البيانات بناءً على هذا العمود؟"
+          },
+          "isSelectable": {
+            "type": "boolean",
+            "default": true,
+            "description": "هل يمكن عرض هذا العمود في استجابات GET؟"
+          }
+        },
+        "required": [
+          "columnName",
+          "dataType",
+          "labelAr",
+          "labelEn"
+        ]
+      },
+      "DynamicColumn": {
+        "type": "object",
+        "properties": {}
+      },
+      "UpdateColumnDto": {
+        "type": "object",
+        "properties": {
+          "labelAr": {
+            "type": "string",
+            "example": "الوصف الكامل",
+            "description": "القيمة الجديدة لاسم العمود باللغة العربية (اختياري)."
+          },
+          "labelEn": {
+            "type": "string",
+            "example": "Full Description",
+            "description": "القيمة الجديدة لاسم العمود باللغة الإنجليزية (اختياري)."
+          },
+          "isNullable": {
+            "type": "boolean",
+            "description": "تحديد ما إذا كان يمكن أن تكون قيمة هذا العمود فارغة (اختياري)."
+          },
+          "isSearchable": {
+            "type": "boolean",
+            "description": "تحديد ما إذا كان يمكن البحث في هذا العمود (اختياري)."
+          },
+          "isFilterable": {
+            "type": "boolean",
+            "description": "تحديد ما إذا كان يمكن فلترة البيانات بناءً على هذا العمود (اختياري)."
+          },
+          "isSortable": {
+            "type": "boolean",
+            "description": "تحديد ما إذا كان يمكن ترتيب البيانات بناءً على هذا العمود (اختياري)."
+          },
+          "isSelectable": {
+            "type": "boolean",
+            "description": "تحديد ما إذا كان سيتم عرض هذا العمود في استجابات API (اختياري)."
+          },
+          "columnName": {
+            "type": "string",
+            "example": "new_column_name",
+            "description": "الاسم البرمجي الجديد للعمود"
+          }
+        },
+        "required": [
+          "columnName"
+        ]
+      }
+    }
+  }
+}

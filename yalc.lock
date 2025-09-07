@@ -1,0 +1,9 @@
+{
+  "version": "v1",
+  "packages": {
+    "api-core-lib": {
+      "signature": "2898ee5a3dd2b8cdcbfd85168eb850c4",
+      "file": true
+    }
+  }
+}

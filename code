@@ -1,0 +1,2 @@
+npm install @reduxjs/toolkit react-redux zod @hookform/resolvers zustand lucide-react class-variance-authority clsx tailwind-merge date-fns react-day-picker
+
