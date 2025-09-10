@@ -53,9 +53,10 @@ export function ImageUpload({
     formData.append("file", selectedFile);
 
     try {
-      const response = await fetch("http://192.168.8.123:7000/api/v1/files/upload", {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/v1/files/upload`, {
         method: "POST",
         body: formData,
+        
       });
 
       if (!response.ok) {

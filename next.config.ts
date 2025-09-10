@@ -6,7 +6,11 @@ const withNextIntl = createNextIntlPlugin();
 const nextConfig: NextConfig = {
   reactStrictMode: !false,
   images: {
-    remotePatterns: [{ protocol: 'https', hostname: '**' }],
+    remotePatterns: [
+      { protocol: 'http', hostname: '**' },
+      { protocol: 'http', hostname: '**' },
+    
+    ],
   },
 
   // async rewrites() {

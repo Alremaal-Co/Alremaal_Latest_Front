@@ -29,9 +29,10 @@ import {
 } from "@/components/ui/navigation-menu"
 import { cn } from "@/lib/utils";
 import { forwardRef } from "react";
+import { getIcon } from "@/lib/getIcon";
 
 type SubItem = { title: string; href: string; };
-type NavItem = { title:string; href?: string; icon?: LucideIcon; items?: SubItem[]; };
+type NavItem = { title:string; href?: string; icon?: string; items?: SubItem[]; };
 
 interface NavMainProps {
   label?: string; 
@@ -145,7 +146,9 @@ export function NavMain({ label, items, isRtl, orientation = 'vertical' }: NavMa
                     className={cn("w-full justify-start cursor-pointer text-muted-foreground transition-colors hover:bg-accent hover:text-accent-foreground", isActive && "!bg-primary")}
                   >
                     {isActive && <div className="absolute left-0 h-6 w-1 rounded-full bg-primary rtl:left-auto rtl:right-0" />}
-                    {item.icon && <item.icon className={cn("size-4 shrink-0" , isActive && "text-white ")} />}
+                    {/* {item.icon && <item.icon className={cn("size-4 shrink-0" , isActive && "text-white ")} />} */}
+                    {getIcon(item?.icon, { className: cn("size-4 shrink-0", isActive && "text-white") })}
+
                     <span className={cn("truncate" , isActive && "text-white font-bold" )}>{item.title}</span>
                   </SidebarMenuButton>
                 </Link>
@@ -162,7 +165,8 @@ export function NavMain({ label, items, isRtl, orientation = 'vertical' }: NavMa
                     className={cn("w-full justify-start cursor-pointer text-muted-foreground transition-colors hover:bg-accent hover:text-accent-foreground", isActive && "!bg-primary")}
                   
                   >
-                    {item.icon && <item.icon className={cn("size-4 shrink-0" , isActive && "text-white ")} />}
+                    {/* {item.icon && <item.icon className={cn("size-4 shrink-0" , isActive && "text-white ")} />} */}
+                    {getIcon(item.icon, { className: cn("size-4 shrink-0", isActive && "text-white") })}
                     <span className={cn("truncate" , isActive && "text-white font-bold" )}>{item.title}</span>
                     <ChevronRight className={cn("ml-auto transition-transform duration-200 group-data-[state=open]/trigger:rotate-90 rtl:ml-0 rtl:mr-auto rtl:-rotate-180 rtl:group-data-[state=open]:-rotate-90", isActive && "text-white ")} />
                   </SidebarMenuButton>

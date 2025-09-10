@@ -69,6 +69,14 @@ export default function middleware(req: NextRequest): NextResponse {
     return NextResponse.redirect(url);
   }
 
+//   if (!locale || (locale !== Languages.ARABIC && locale !== Languages.ENGLISH)) {
+//   console.log('Redirecting. Original pathname:', pathname);
+//   const url = new URL(req.nextUrl);
+//   url.pathname = `/${Languages.ARABIC}${pathname === '/' ? '' : pathname}`;
+//   console.log('Redirecting to new URL:', url.toString());
+//   return NextResponse.redirect(url);
+// }
+
   const response = nextIntlMiddleware(req);
   response.cookies.set('NEXT_LOCALE', locale, { path: '/' });
 
@@ -77,6 +85,6 @@ export default function middleware(req: NextRequest): NextResponse {
 
 export const config = {
   matcher: [
-    '/((?!api|_next|favicon.ico|robots.txt|sitemap.xml|assets).*)',
+    '/((?!api|v1|_next|favicon.ico|robots.txt|sitemap.xml|assets).*)',
   ],
 };

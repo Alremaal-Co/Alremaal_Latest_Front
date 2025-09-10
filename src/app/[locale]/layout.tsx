@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 
 // import "../../../public/css/animate/index.css"
 // import '../../..public/icons/fontawesome-free-6.6.0-web/css/all.css';
-// import '../../../public/icons/fontawesome-free-6.6.0-web/css/all.min.css'
+import '../../../public/icons/fontawesome-free-6.6.0-web/css/all.min.css'
 
 import { ReactNode, Suspense } from "react";
 import { routing } from "../../i18n/routing";

@@ -35,12 +35,12 @@ export default function DropdownContent() {
   return (
     <MainDropdown stateValue={NAVBAR_STATE_TYPE.LISTING_PAGES}>
       <div onClick={(e: React.MouseEvent<HTMLDivElement, MouseEvent>)=>onClick(e , false)} 
-          className='absolute rounded-b-[20px] -top-0 lg:ltr:left-[17.3vw] lg:rtl:right-[17.3vw] md:ltr:left-[5vw] md:rtl:right-[5vw] md:w-[90vw] lg:w-[70vw] xl:w-[55vw] 2xl:w-[40vw] h-auto bg-white dark:bg-dark-box shadow-lg'>
+          className='absolute rounded-b-[20px]  -top-0 lg:ltr:left-[17.3vw] lg:rtl:right-[17.3vw] md:ltr:left-[5vw] md:rtl:right-[5vw] md:w-[90vw] lg:w-[70vw] xl:w-[55vw] 2xl:w-[40vw] h-auto bg-white dark:bg-dark-box shadow-lg'>
           <DropdownArrow />
 
         <div className='w-full h-full p-4'>
 
-          <div className='w-full h-full grid grid-cols-3 gap-x-4 whitespace-normal'>
+          <div className='w-full h-full bg-pr grid grid-cols-3 gap-x-4 bg-primary whitespace-normal'>
             <DynamicLinksSection/>
             <ServicesSection />
           </div>
@@ -49,8 +49,6 @@ export default function DropdownContent() {
     </MainDropdown>
   );
 }
-
-
 
 
 

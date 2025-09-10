@@ -20,6 +20,10 @@ import { sidebarDataAr } from "@/core/data/sidebar-data-ar";
 
 import { GalleryVerticalEnd } from "lucide-react"; 
 import { sidebarDataEn } from "@/core/data/sidebar-data-en";
+import { apiClient } from "@/lib/api-core/clientApi";
+import { serverApiClient } from "@/lib/api-core/serverApi";
+import { useApiModule } from "api-core-lib/client";
+import { SidebarConfigApi } from "@/lib/api/Sidebar";
 
 const data = {
   user: {
@@ -35,8 +39,17 @@ const data = {
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const { settings } = useThemeCustomizer();
   const isRtl = settings.direction === 'rtl';
-
-  const sidebarData = isRtl ? sidebarDataAr  : sidebarDataEn;
+  const {states} = useApiModule(apiClient, SidebarConfigApi, {
+    enabled:true,
+    pathParams:{
+      name:"admin-sidebar"
+    }
+  });
+  const {data:sidbarData , called , error , loading , success , rawResponse , isStale , lastSuccessAt , message} = states.findActive
+  console.log("sidbarDatasidbarData:" , sidbarData)
+  console.log("rawResponse sidbarDatasidbarData:" , rawResponse)
+  const sidebarData = sidbarData 
+  //  isRtl ? sidebarDataAr  : sidebarDataEn;
   const { open , isMobile  , openMobile , setOpen , setOpenMobile , state , toggleSidebar  } = useSidebar() 
 
   return (
@@ -49,7 +62,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       </SidebarHeader>
 
       <SidebarContent>
-        {sidebarData.sections.map((section) => {
+        {sidebarData?.sections?.map((section) => {
           return (
             <React.Fragment key={section.title}>
               {section?.items?.length > 0 && (

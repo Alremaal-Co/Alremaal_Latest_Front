@@ -1,5 +1,3 @@
-import Loading from '@/app/loading'
-import { Directions, Languages } from '@/core/enum/general'
 import { NextIntlClientProvider } from 'next-intl'
 import { getMessages } from 'next-intl/server'
 import React, { Suspense } from 'react'
@@ -33,8 +31,7 @@ export default async function BaseLayout({locale , children}:BaseLayout) {
       <body className={cn("min-h-screen font-sans max-w-screen", cairoFont.className)}>
         <ThemeCustomizerProvider locale={locale}>
           <NextIntlClientProvider messages={messages}>
-        <Toaster position="top-center" richColors closeButton dir="auto"/>
-
+          <Toaster position="top-center" richColors closeButton dir="auto"/>
             <ReduxProvider>{children}</ReduxProvider>
           </NextIntlClientProvider>
         </ThemeCustomizerProvider>

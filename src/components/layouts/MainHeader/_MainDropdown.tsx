@@ -32,9 +32,9 @@ export function MainDropdown({ children , stateValue }: {stateValue?:NAVBAR_STAT
 
   return (
     <AnimatePresence >
-    <MotionDiv
+    <motion.div
       key={config.state}
-      // variants={dropdownVariants}
+      variants={dropdownVariants}
       initial="initial"
       animate={config.state === stateValue ? "animate" : "initial"}
       exit="exit"
@@ -45,7 +45,7 @@ export function MainDropdown({ children , stateValue }: {stateValue?:NAVBAR_STAT
       onMouseEnter={handleMouseEnter}
        className="w-screen h-full absolute bottom-0"></div>}
       {children}
-    </MotionDiv>
+    </motion.div>
     </AnimatePresence>
   );
 }

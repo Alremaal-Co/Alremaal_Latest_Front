@@ -1,3 +1,4 @@
+import { Variants } from "framer-motion";
 import { NAVBAR_STATE_TYPE } from "./enum";
 import { MAIN_DROPDOWN_NAVEBAR_V2_TYPE } from "./types";
 
@@ -16,7 +17,7 @@ export const MAIN_DROPDOWN_NAVEBAR_V2:MAIN_DROPDOWN_NAVEBAR_V2_TYPE ={
 
 
 
-export const dropdownVariants = {
+export const dropdownVariants:Variants = {
     initial: {
       clipPath: "polygon(0 0, 100% 0, 100% 0, 0 0)",
       opacity: 0,
@@ -40,7 +41,7 @@ export const dropdownVariants = {
   };
 
 
-  export const dropdownVariantsNoOpacity = {
+  export const dropdownVariantsNoOpacity:Variants = {
     initial: {
       clipPath: "polygon(0 0, 100% 0, 100% 0, 0 0)",
       opacity: 0,

@@ -13,7 +13,7 @@ export default async function MemberPage() {
 
   await serverApi.prefetch("findAll", __input,__options);
 
-  const dehydratedState = serverApi.dehydrate();
+  const dehydratedState = serverApi?.dehydrate();
   console.log("dehydratedState" , dehydratedState)
 
   return (

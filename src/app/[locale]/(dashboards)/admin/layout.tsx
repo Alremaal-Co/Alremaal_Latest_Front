@@ -82,13 +82,13 @@
 
 "use client";
 
-import { useEffect, useState } from "react"; // 1. استيراد Hooks
+import { useEffect, useState } from "react";
 import { AppSidebar } from "@/components/app-sidebar";
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 import { useThemeCustomizer } from "@/context/ThemeCustomizerContext";
 import { cn } from "@/lib/utils";
 import Loading from "@/app/loading"; 
-import { AdminHeader } from "@/components/header";
+import { AdminHeader } from "@/components/header/admin.header";
 
 export default function AdminLayout({
   children,

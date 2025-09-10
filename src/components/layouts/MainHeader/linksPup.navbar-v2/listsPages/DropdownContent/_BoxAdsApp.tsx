@@ -1,6 +1,7 @@
 "use client"
 import useImageAnimation from '@/hooks/useImageAnimation';
 import { t } from '@/i18n/trans';
+import { formatImageUrl } from '@/lib/format-Image-url';
 import React, { useState, useEffect } from 'react';
 
 const animationOutClasses = [
@@ -28,9 +29,10 @@ const animationInClasses = [
 ];
 
 const images = [
-    "/assets/images/gif/_test/ads-app.jpg",
-    "/assets/images/gif/_test/ads-app-2.png",
-    "/assets/images/gif/_test/ads-app-3.png",
+    "/files/1757423416224-628533166.jpg",
+    "/files/1757424361056-128636716.png",
+    "/files/1757424405249-964609232.png",
+    // "/assets/images/gif/_test/ads-app-3.png"
 ];
 
 export default function BoxAdsApp() {
@@ -39,11 +41,14 @@ export default function BoxAdsApp() {
     useEffect(()=>{
         setIsHovered(true)
     },[])
+  const fullImageUrl = formatImageUrl(images[currentIndex]);
+
     return (
         <div       
         //    onMouseEnter={() => setHovered(true)}
         //    onMouseLeave={() => setHovered(!false)}
-         className={`w-[calc(100%-8px)] relative h-[calc(100%-8px)] bg-cover rounded-lg ${isHovered ? animationClassName : ''} transition-all ease-in-out duration-700`} style={{ backgroundImage: `url(${images[currentIndex]})` }}>
+         className={`w-[calc(100%-8px)] relative h-[calc(100%-8px)] bg-cover rounded-lg ${isHovered ? animationClassName : ''} transition-all ease-in-out duration-700`} 
+         style={{ backgroundImage: `url(${fullImageUrl})` }}>
             <div className='bg-dark bg-opacity-30 absolute w-full h-full rounded-lg'></div>
             <div style={{
                 borderTopLeftRadius: "50% 20%",
